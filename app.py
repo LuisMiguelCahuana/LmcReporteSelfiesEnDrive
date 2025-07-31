@@ -5,9 +5,9 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
-# === CONFIGURA AQUÍ ===
-NOMBRE_JSON = "lmcselfies.json"  # nombre del archivo JSON de la cuenta de servicio
-CARPETA_ID_DRIVE = "TU_ID_DE_CARPETA_AQUI"  # 👈 REEMPLAZA con el ID real de tu carpeta compartida en Google Drive
+# === CONFIGURACIÓN ===
+NOMBRE_JSON = "lmcselfies.json"
+CARPETA_ID_DRIVE = "1BjHmxl7eIaR1c1WtQVC25tc9TtKe1vrh"  # ID real de tu carpeta
 
 # === AUTENTICACIÓN ===
 def crear_servicio_drive():
@@ -57,5 +57,4 @@ if archivo is not None:
             f'</button></a>', unsafe_allow_html=True
         )
 
-        # Limpieza opcional del archivo temporal
         os.remove(archivo.name)
