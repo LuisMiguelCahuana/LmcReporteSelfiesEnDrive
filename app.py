@@ -1,12 +1,9 @@
-# app.py
 import streamlit as st
 import requests
 import re
 import pandas as pd
-from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill, Alignment
-from openpyxl.utils import get_column_letter
 import os
+import xlsxwriter
 
 # Título
 st.markdown(
@@ -82,37 +79,37 @@ if st.button("🔓 Iniciar sesión"):
                     vista_columns = [f"Vista Url_foto {i+1}" for i in range(max_urls)]
                     all_columns = ["Fecha Selfie", "Lecturista"] + url_columns + vista_columns
 
-                    wb = Workbook()
-                    ws = wb.active
-                    ws.title = "LmcSelfiesLectura"
-                    ws.freeze_panes = "A2"
-                    ws.append(all_columns)
-
-                    ws.column_dimensions['A'].width = 12
-                    ws.column_dimensions['B'].width = 18
-
-                    header_fill = PatternFill(start_color="007BFF", end_color="007BFF", fill_type="solid")
-                    header_font = Font(color="FFFFFF", bold=True)
-
-                    for cell in ws[1]:
-                        cell.fill = header_fill
-                        cell.font = header_font
-                        cell.alignment = Alignment(horizontal='center')
-
-                    for i, ((lecturista, fecha_selfie), info) in enumerate(results.items(), start=2):
-                        row = [fecha_selfie, lecturista] + info["URLs Imagen"] + [""] * (max_urls - len(info["URLs Imagen"]))
-                        ws.append(row + [""] * max_urls)
-                        ws[f"A{i}"].alignment = Alignment(horizontal='left')
-                        ws[f"B{i}"].alignment = Alignment(horizontal='justify')
-                        for j in range(max_urls):
-                            url_cell = f"{get_column_letter(3 + j)}{i}"
-                            formula_cell = f"{get_column_letter(3 + max_urls + j)}{i}"
-                            ws[formula_cell] = f'=SI.ERROR(IMAGE({url_cell};;3;200;140);"")'   #=SI.ERROR(IMAGEN(C2;;3;200;140);"")
-                            ws.column_dimensions[get_column_letter(3 + max_urls + j)].width = round(140 / 7, 1)
-                        ws.row_dimensions[i].height = 151
-
                     filename = "Lmc_ReporteSelfie.xlsx"
-                    wb.save(filename)
+                    workbook = xlsxwriter.Workbook(filename)
+                    worksheet = workbook.add_worksheet("LmcSelfiesLectura")
+
+                    header_format = workbook.add_format({
+                        'bold': True,
+                        'font_color': 'white',
+                        'bg_color': '#007BFF',
+                        'align': 'center'
+                    })
+
+                    # Escribir cabeceras
+                    for col_num, col_name in enumerate(all_columns):
+                        worksheet.write(0, col_num, col_name, header_format)
+                        worksheet.set_column(col_num, col_num, 22)
+
+                    # Escribir filas
+                    for row_num, ((lecturista, fecha_selfie), info) in enumerate(results.items(), start=1):
+                        worksheet.write(row_num, 0, fecha_selfie)
+                        worksheet.write(row_num, 1, lecturista)
+
+                        for j, url in enumerate(info["URLs Imagen"]):
+                            url_col = 2 + j
+                            img_col = 2 + max_urls + j
+                            worksheet.write(row_num, url_col, url)
+                            formula = f'=IMAGEN({xlsxwriter.utility.xl_col_to_name(url_col)}{row_num + 1};;3;200;140)'
+                            worksheet.write_formula(row_num, img_col, formula)
+                            worksheet.set_column(img_col, img_col, 20)
+                        worksheet.set_row(row_num, 140)
+
+                    workbook.close()
 
                     with open(filename, "rb") as f:
                         st.success("✅ Reporte generado con éxito. Descárgalo aquí:")
