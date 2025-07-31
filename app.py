@@ -1,3 +1,5 @@
+import os
+os.system("pip install xlsxwriter")
 import streamlit as st
 import requests
 import re
