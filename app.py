@@ -79,7 +79,7 @@ if st.button("🔓 Iniciar sesión y generar reporte"):
         for block in blocks:
             fecha = re.search(r"Fecha Selfie:\s*(\d{1,2} de [a-zA-Z]+ de \d{4} en horas: \d{2}:\d{2}:\d{2})", block)
             lecturista = re.search(r"Lecturista:\s*([\w\sÁÉÍÓÚáéíóúÑñ]+)", block)
-            url = re.search(r"url\":\"(https[^"]+)", block)
+            url = re.search(r"url\":\"(https[^\"]+)", block)
 
             if fecha and lecturista and url:
                 fecha_formateada = convertir_fecha_hora(fecha.group(1).strip())
