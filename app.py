@@ -120,7 +120,19 @@ if st.button("🔓 Iniciar sesión y generar reporte"):
         filename = "Lmc_ReporteSelfie.xlsx"
         wb.save(filename)
 
-        servicio = crear_servicio_drive()
+        # Crear servicio y validar acceso a Google Drive
+        try:
+            servicio = crear_servicio_drive()
+            archivos = servicio.files().list(q=f"'{CARPETA_ID_DRIVE}' in parents", pageSize=1).execute()
+            st.success("✅ Conexión con Google Drive verificada correctamente.")
+        except Exception as e:
+            st.error("❌ Error al conectar con Google Drive. Verifica los Secrets.")
+            st.exception(e)
+            st.stop()
+        
+        # Subir archivo una vez validado
+        subir_a_drive(servicio, filename, filename, CARPETA_ID_DRIVE)
+        enlace = f"https://drive.google.com/drive/folders/{CARPETA_ID_DRIVE}"
         subir_a_drive(servicio, filename, filename, CARPETA_ID_DRIVE)
         enlace = f"https://drive.google.com/drive/folders/{CARPETA_ID_DRIVE}"
 
