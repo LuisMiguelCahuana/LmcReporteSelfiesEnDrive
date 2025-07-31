@@ -107,7 +107,7 @@ if st.button("🔓 Iniciar sesión"):
                         for j in range(max_urls):
                             url_cell = f"{get_column_letter(3 + j)}{i}"
                             formula_cell = f"{get_column_letter(3 + max_urls + j)}{i}"
-                            ws[formula_cell] = f'=IMAGE({url_cell},4,200,140)'
+                            ws[formula_cell] = f'=SI.ERROR(IMAGE({url_cell};;3;200;140);"")'   #=SI.ERROR(IMAGEN(C2;;3;200;140);"")
                             ws.column_dimensions[get_column_letter(3 + max_urls + j)].width = round(140 / 7, 1)
                         ws.row_dimensions[i].height = 151
 
