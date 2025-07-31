@@ -11,7 +11,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 import os
 
-# === CONFIGURACION ===
+# === CONFIGURACIÓN ===
 CARPETA_ID_DRIVE = "1BjHmxl7eIaR1c1WtQVC25tc9TtKe1vrh"
 
 # === FUNCIONES ===
@@ -38,10 +38,15 @@ def crear_servicio_drive():
     return build('drive', 'v3', credentials=creds)
 
 def subir_a_drive(servicio, archivo_local, nombre_en_drive, folder_id):
-    metadata = {'name': nombre_en_drive, 'parents': [folder_id]}
-    media = MediaFileUpload(archivo_local, resumable=True)
-    archivo = servicio.files().create(body=metadata, media_body=media, fields='id').execute()
-    return archivo['id']
+    try:
+        metadata = {'name': nombre_en_drive, 'parents': [folder_id]}
+        media = MediaFileUpload(archivo_local, resumable=True)
+        archivo = servicio.files().create(body=metadata, media_body=media, fields='id').execute()
+        return archivo['id']
+    except Exception as e:
+        st.error("❌ Error al subir el archivo a Google Drive")
+        st.exception(e)
+        raise
 
 # === INTERFAZ ===
 st.title("📸 Generar y Subir Reporte de Selfies desde SIGOF")
@@ -120,7 +125,6 @@ if st.button("🔓 Iniciar sesión y generar reporte"):
         filename = "Lmc_ReporteSelfie.xlsx"
         wb.save(filename)
 
-        # Crear servicio y validar acceso a Google Drive
         try:
             servicio = crear_servicio_drive()
             archivos = servicio.files().list(q=f"'{CARPETA_ID_DRIVE}' in parents", pageSize=1).execute()
@@ -129,10 +133,8 @@ if st.button("🔓 Iniciar sesión y generar reporte"):
             st.error("❌ Error al conectar con Google Drive. Verifica los Secrets.")
             st.exception(e)
             st.stop()
-        
-        # Subir archivo una vez validado
-        subir_a_drive(servicio, filename, filename, CARPETA_ID_DRIVE)
-        enlace = f"https://drive.google.com/drive/folders/{CARPETA_ID_DRIVE}"
+
+        # Subir solo una vez
         subir_a_drive(servicio, filename, filename, CARPETA_ID_DRIVE)
         enlace = f"https://drive.google.com/drive/folders/{CARPETA_ID_DRIVE}"
 
