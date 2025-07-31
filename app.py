@@ -12,7 +12,6 @@ from googleapiclient.http import MediaFileUpload
 import os
 
 # === CONFIGURACION ===
-SERVICE_JSON = "lmcselfies.json"
 CARPETA_ID_DRIVE = "1BjHmxl7eIaR1c1WtQVC25tc9TtKe1vrh"
 
 # === FUNCIONES ===
@@ -30,8 +29,8 @@ def convertir_fecha_hora(fecha_hora_str):
     return fecha_hora_str
 
 def crear_servicio_drive():
-    with open(SERVICE_JSON) as fuente:
-        info = json.load(fuente)
+    info = dict(st.secrets["gdrive"])
+    info["private_key"] = info["private_key"].replace("\\n", "\n")
     creds = service_account.Credentials.from_service_account_info(
         info,
         scopes=["https://www.googleapis.com/auth/drive"]
