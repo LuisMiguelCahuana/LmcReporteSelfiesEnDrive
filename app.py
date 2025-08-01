@@ -105,10 +105,10 @@ if st.button("🔓 Iniciar sesión"):
                         ws[f"A{i}"].alignment = Alignment(horizontal='left')
                         ws[f"B{i}"].alignment = Alignment(horizontal='justify')
                         for j in range(max_urls):
-                        url_cell = f"{get_column_letter(3 + j)}{i}"
-                        formula_cell = f"{get_column_letter(3 + max_urls + j)}{i}"
-                        ws[formula_cell] = f'=IMAGEN({url_cell};;3;200;140)'
-                        ws.column_dimensions[get_column_letter(3 + max_urls + j)].width = round(140 / 7, 1)
+                            url_cell = f"{get_column_letter(3 + j)}{i}"
+                            formula_cell = f"{get_column_letter(3 + max_urls + j)}{i}"
+                            ws[formula_cell] = f'=IMAGEN({url_cell};;3;200;140)'
+                            ws.column_dimensions[get_column_letter(3 + max_urls + j)].width = round(140 / 7, 1)
                         ws.row_dimensions[i].height = 151
 
                     filename = "Lmc_ReporteSelfie.xlsx"
