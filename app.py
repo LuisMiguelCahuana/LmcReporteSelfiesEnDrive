@@ -1,4 +1,3 @@
-# app.py
 import streamlit as st
 import requests
 import re
@@ -121,6 +120,9 @@ if st.button("🔓 Humano inicia sesión"):
 
                 # Guardar el archivo localmente
                 output_path = "Lmc_ReporteSelfie.xlsx"
-                wb.save(output_path)
-                st.success("✅ Humano, el archivo fue guardado correctamente.")
-                st.markdown(f'<a href="{output_path}" download><button>📥 Descargar archivo</button></a>', unsafe_allow_html=True)
+                try:
+                    wb.save(output_path)
+                    st.success("✅ Humano, el archivo fue guardado correctamente.")
+                    st.markdown(f'<a href="{output_path}" download><button>📥 Descargar archivo</button></a>', unsafe_allow_html=True)
+                except Exception as e:
+                    st.error(f"Error al guardar el archivo: {e}")
